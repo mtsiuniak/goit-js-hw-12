@@ -165,7 +165,10 @@ input {
 input:hover {
   border: 1px solid #121111;
 }
-input::placeholder {
-  
-}
 
+.load-btn-container {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+
+}
