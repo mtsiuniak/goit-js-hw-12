@@ -50,7 +50,6 @@ function onFormHandler(event) {
             loadBtn.classList.remove('visually-hidden')
             
              if (data.totalHits < limit) {
-                iziToast.warning({ message: `Only ${data.totalHits} pictures with your request were found`});
                 loadBtn.classList.add('visually-hidden')
              }
             
@@ -61,9 +60,11 @@ function onFormHandler(event) {
             iziToast.error({ message: "Error occurred while fetching images. Please try again later!" });
         }).finally(() => {
             loader.classList.remove('loader');
+            event.target.elements.name.value = null;
         });
-    
-    loadBtn.addEventListener('click', onClickHandler);
+}
+
+loadBtn.addEventListener('click', onClickHandler);
 
     function onClickHandler() {
         current_page++;
@@ -71,7 +72,13 @@ function onFormHandler(event) {
 
             const firstGalleryItem = document.querySelector('li')
             const { height } = firstGalleryItem.getBoundingClientRect();
-    
+            const totalHits = data.totalHits;
+            const totalPages = Math.floor(totalHits / limit);
+            
+            if (current_page > totalPages) {
+                iziToast.error({ message: "We're sorry, but you've reached the end of search results." });
+                loadBtn.classList.add('visually-hidden')
+            } 
             const images = data.hits;
             const markup = images.map(image => createMarkup(image)).join('');
 
@@ -82,19 +89,9 @@ function onFormHandler(event) {
             behavior: 'smooth',
             });
 
-            const totalHits = data.totalHits;
-            const totalPages = Math.floor(totalHits / limit);
-
-            if (current_page > totalPages) {
-                iziToast.error({ message: "We're sorry, but you've reached the end of search results." });
-                loadBtn.classList.add('visually-hidden')
-            }
             lightbox.refresh();
+            
         }).catch(() => {
             iziToast.error({ message: "Error occurred while fetching images. Please try again later!" });
         })
     }
-     form.reset();
-    
-}
-
